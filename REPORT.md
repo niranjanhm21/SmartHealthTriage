@@ -44,26 +44,68 @@ Complex machine learning models (such as deep neural networks or gradient-booste
 
 ## 2. Literature Review & Theoretical Grounding
 
-### 2.1 The SCARF Framework (Kopka & Feufel, 2026)
-In their seminal work on digital health safety, **Kopka and Feufel (2026)** introduced the *Symptom Checker Assessment and Reliability Framework (SCARF)*. Their research critically evaluated 22 commercial algorithmic symptom checkers across 1,200 simulated clinical vignettes. 
+## 2. Literature Review & Theoretical Grounding
 
-Key findings from SCARF established:
-- Purely statistical models demonstrated a troubling **14.2% mean under-triage rate** in emergency presentations, primarily because models rewarded high-probability common diagnoses over low-probability high-acuity risks.
-- SCARF demonstrated that clinical triage engines must maintain asymmetric cost functions: false negatives in emergency conditions must be mathematically or architecturally penalized at orders of magnitude higher than false positives.
-- The authors concluded that the safest digital triage architectures are **hybrid systems** combining statistical classification with deterministic clinical safety rules.
+### 2.1 Symptom Checker Accuracy Reporting Framework (Kopka & Feufel, 2026)
 
-### 2.2 Explainable AI in Acute Healthcare Triage (Patwardhan et al., 2026)
-**Patwardhan et al. (2026)** investigated clinician trust and diagnostic verification when interacting with AI triage assistants in high-stress clinical environments. Their findings highlighted:
-- Clinicians overwhelmingly reject black-box probability scores without local feature attribution, citing legal liability and verification overhead.
-- Game-theoretic Shapley values (SHAP) provide additive consistency and local accuracy, making them superior to perturbation-based methods (such as LIME).
-- Specifically, identifying **negative contributors** (symptoms whose absence reduced confidence in a disease) was found to be just as critical for differential diagnosis as identifying positive supporting symptoms.
+Kopka and Feufel (2026) proposed the Symptom Checker Accuracy Reporting Framework (SCARF) to improve the quality, transparency, and comparability of evaluations of symptom checkers and AI-based diagnostic decision-support systems.
+
+The framework emphasizes the following important aspects:
+
+- Clearly defining the intended use case and target population.
+- Selecting representative clinical cases or symptom scenarios for evaluation.
+- Establishing appropriate reference standards for evaluating system recommendations.
+- Reporting overall accuracy and performance across individual triage levels.
+- Evaluating the safety of recommendations, including under-triage and over-triage.
+- Improving consistency between evaluations so that results can be compared across studies.
+
+**Relevance to SmartHealth Triage:**
+
+SCARF provides methodological guidance for evaluating symptom-assessment systems. It highlights that evaluating a system only through condition prediction accuracy is insufficient. The urgency recommendations and safety of the system must also be considered.
+
+This framework supports the evaluation approach adopted in SmartHealth Triage, particularly the importance of assessing emergency-related performance, under-triage, and over-triage.
+
+### 2.2 Patient-Facing AI System for Symptom Guidance (Patwardhan et al., 2026)
+
+Patwardhan et al. (2026) conducted an analytical validation study of a patient-facing AI system designed to provide symptom guidance and care-seeking recommendations.
+
+The researchers evaluated a locked configuration of the Personal Health Assistant using 772 synthetic patient cases. The cases included simulated patient conversations and medical information. Five independent physicians reviewed the cases to establish reference recommendations for the appropriate level of care.
+
+The study evaluated several important aspects:
+
+- Urgent under-triage, where a system recommends a less urgent level of care than required.
+- Nonurgent under-triage, where the recommended level of care is also less urgent than the reference recommendation.
+- Over-triage, where the system recommends a more urgent level of care than necessary.
+- The appropriateness of possible-condition suggestions and additional patient guidance.
+
+The study reported urgent under-triage in 6.9% of evaluated cases, nonurgent under-triage in 18.4%, and over-triage in 11.0%. The authors also highlighted that the results were based on synthetic cases and simulated encounters, so they may not represent performance in real-world patient populations.
+
+**Relevance to SmartHealth Triage:**
+
+This research demonstrates the importance of evaluating patient-facing AI systems using structured test cases and expert reference assessments. It also highlights that under-triage and over-triage should be measured separately rather than relying only on overall accuracy.
+
+The study provides a useful reference for the safety evaluation strategy of SmartHealth Triage. However, the results reported by Patwardhan et al. belong to their evaluated system and must not be interpreted as the performance of SmartHealth Triage.
 
 ### 2.3 Synthesis of Research Gaps
-Existing literature demonstrates a persistent dichotomy:
-- Pure heuristic rule-based systems are clinically safe but brittle, struggling with complex multi-symptom differentials.
-- Pure statistical ML systems are diagnostically flexible but prone to fatal under-triage and opaque outputs.
 
-**SmartHealth Triage** directly synthesizes these paradigms into a unified, safety-constrained architecture.
+The reviewed research highlights several important considerations when developing and evaluating symptom-assessment systems:
+
+- Condition prediction accuracy alone does not establish the safety of a triage recommendation.
+- Under-triage and over-triage should be evaluated separately because both can affect the appropriateness of care-seeking decisions.
+- Emergency warning signs require explicit attention during system design and testing.
+- Explainability can help users understand which input features influence model predictions, but it does not independently establish clinical correctness.
+- Transparent reporting of datasets, evaluation methods, results, and limitations is necessary.
+- Systems evaluated using synthetic data require further validation before they can be considered suitable for real-world clinical use.
+
+**Proposed Approach in SmartHealth Triage:**
+
+SmartHealth Triage explores these considerations through a combination of machine learning-based condition prediction, a separate rule-based red-flag safety layer, and SHAP-based model explanations.
+
+The machine learning component predicts possible health conditions from the reported symptoms. The safety layer checks for configured emergency warning signs and can override the normal assessment when a recognised red flag is detected. SHAP is used to explain the features contributing to model predictions.
+
+The project also considers safety-related evaluation, including under-triage and over-triage, as important areas for assessing the system.
+
+The current implementation is an academic prototype. Its predictions, urgency categories, and safety rules have not undergone clinical validation and must not be used as a substitute for professional medical assessment.
 
 ---
 
