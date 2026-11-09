@@ -1,155 +1,234 @@
-# SmartHealth Triage: Explainable Symptom-Based Health Issue Prediction and Risk Stratification System
-
+# SmartHealth Triage
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.40%2B-FF4B4B.svg)](https://streamlit.io/)
 [![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.3%2B-F7931E.svg)](https://scikit-learn.org/)
 [![SHAP](https://img.shields.io/badge/SHAP-TreeExplainer-green.svg)](https://github.com/slundberg/shap)
 [![License](https://img.shields.io/badge/License-Academic_Research-purple.svg)]()
 
-> **Novelty & Core Innovation:**  
-> **SmartHealth Triage bridges the gap between black-box statistical symptom checking and emergency patient safety by uniting a high-accuracy Random Forest classifier and real-time TreeSHAP local explainability with a deterministic clinical red-flag override engine that eliminates critical under-triage risks.**
+**Explainable Symptom-Based Health Issue Prediction and Risk Stratification System**
+
+SmartHealth Triage is an academic MCA Data Science project that explores how machine learning, explainable AI, and rule-based safety checks can be combined in a symptom-assessment application.
+
+The system predicts possible health conditions from user-reported symptoms, checks for predefined emergency warning signs, and provides explanations of model predictions using SHAP.
+
+> **Important:** This is an educational prototype, not a clinically validated medical diagnostic system. Its predictions and urgency assessments must not replace professional medical advice.
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
-Digital symptom assessment tools and AI symptom checkers frequently suffer from two fatal vulnerabilities:
-1. **Under-Triage Risk**: Statistical models trained on disease prevalence often misclassify critical emergency emergencies (such as myocardial infarction or stroke) as benign conditions when common symptoms overlap.
-2. **Opacity (Black-Box Nature)**: Patients and clinicians lack visibility into *why* a particular condition was recommended, eroding trust and clinical utility.
+Traditional machine learning classifiers focus mainly on predicting a target class from input features. In symptom-assessment applications, however, predicting a possible condition is only one part of the problem. Emergency warning signs and the urgency of seeking medical attention also need consideration.
 
-**SmartHealth Triage** addresses both challenges through an explainable, safety-constrained dual-engine architecture:
-- **Statistical ML Engine**: Evaluates 178 binary clinical indicators to rank the **Top-3 probable conditions** with calibrated confidence scores across the top 40 clinical disease classes.
-- **Deterministic Clinical Safety Layer**: Acts as an uncompromised circuit breaker. If acute emergency red flags (e.g., crushing chest pain radiating to the left arm, acute resting dyspnea, sudden hemiparesis, syncope) are reported, the case is immediately escalated to **EMERGENCY PRIORITY**, superseding statistical predictions.
-- **TreeSHAP Explainability**: Decomposes the model's log-odds output to reveal exactly which present symptoms supported the prediction and which absent symptoms argued against it.
+SmartHealth Triage explores this problem through three main components:
+
+1. **Machine Learning Prediction:** Uses a trained classification model to identify and rank up to three possible health conditions based on reported symptoms.
+2. **Rule-Based Safety Layer:** Checks configured emergency red flags and can override the normal urgency assessment when a recognised warning sign is detected.
+3. **Explainable AI:** Uses SHAP to show which symptom features contributed to the model prediction.
+
+The project uses an artificially generated symptom-and-disease dataset. Its results should not be interpreted as evidence of clinical accuracy or real-world medical effectiveness.
 
 ---
 
-## 🏛️ High-Level System Architecture
+## Key Features
+
+- Symptom selection using a vocabulary of 178 model features.
+- Top-3 possible health-condition predictions.
+- Rule-based emergency red-flag detection.
+- Separate safety override mechanism.
+- Four urgency categories: LOW, MODERATE, HIGH, and EMERGENCY.
+- SHAP-based explanations of model predictions.
+- Interactive Streamlit dashboard.
+- Modular Python implementation.
+
+---
+
+## System Architecture
 
 ```mermaid
 flowchart TD
-    A[Patient / User Input] -->|Age, Sex, Duration, Symptoms, Red Flags| B[Sparse Vectorization Layer]
-    B -->|178-Dimensional Binary Feature Vector| C[Random Forest Multi-Class Classifier]
-    C -->|Top-3 Probable Conditions + Softmax Probabilities| D{Deterministic Clinical Safety Layer}
-    A -.->|Emergency Red Flags| D
-    
-    D -->|Red Flag Present: Deterministic Override| E[Triage Level: EMERGENCY<br/>Immediate 911 / ED Dispatch]
-    D -->|No Red Flags: Condition-Severity Mapping| F[Triage Level: LOW / MODERATE / HIGH]
-    
-    C -->|Top-1 Disease Index + Patient Vector| G[TreeSHAP Explainability Engine]
-    G -->|Local Shapley Feature Attributions| H[Positive & Counter Symptom Analysis]
-    
-    E --> I[Interactive Clinical Streamlit Dashboard]
-    F --> I
-    H --> I
-    I -->|Visual Triage Badges, Risk Cards, Altair Attribution Plot| J[End-User / Clinician]
+    A[User Input] --> B[Symptom Processing]
+    B --> C[Machine Learning Model]
+    C --> D[Top-3 Possible Conditions]
+    A --> E[Rule-Based Safety Layer]
+    E --> F{Emergency Red Flag Detected?}
+    F -->|Yes| G[Emergency Override]
+    F -->|No| H[Condition-Based Urgency]
+    D --> I[SHAP Explanation]
+    G --> J[Assessment Results]
+    H --> J
+    I --> J
+    J --> K[Streamlit Dashboard]
 ```
 
-### Architectural Pipeline Breakdown:
-1. **User Intake Form**: Captures demographics, symptom duration, self-reported severity, multi-select symptoms from a 178-feature clinical lexicon, and an explicit emergency red-flag checklist.
-2. **Sparse Vectorization (`src/inference.py`)**: Encodes reported complaints into an exact 178-dimensional binary vector matching pre-trained feature indices.
-3. **ML Inference Engine (`models/best_model.joblib`)**: Runs fast multi-class inference to yield ranked disease predictions and calibrated confidence percentages.
-4. **Safety Override Circuit Breaker (`src/safety_layer.py`)**: Evaluates explicit red flags and critical symptom combinations against standardized clinical emergency protocols.
-5. **SHAP Feature Attribution (`src/explainability.py`)**: Executes tree-based Shapley value computation ($0.41\text{s}$) to extract top positive and negative contributing features.
-6. **Medical-Informatics Web UI (`app/app.py`)**: Renders color-coded urgency badges, high-visibility emergency alert banners, differential diagnosis progress bars, and interactive Altair feature attribution charts.
+### Main Components
+
+| Component | Responsibility |
+|---|---|
+| Input Processing | Converts reported symptoms into model features. |
+| ML Inference | Generates possible-condition predictions. |
+| Safety Layer | Checks predefined emergency warning signs. |
+| Urgency Assessment | Determines the displayed urgency category. |
+| SHAP Explainability | Explains feature contributions to model predictions. |
+| Streamlit Interface | Displays inputs, predictions, alerts, and explanations. |
 
 ---
 
-## 🚀 Quick Start & Installation
+## Technology Stack
 
-### 1. Prerequisites
-- **Python**: Version 3.10, 3.11, or 3.12
-- **Operating System**: Windows, macOS, or Linux
+| Technology | Purpose |
+|---|---|
+| Python | Main programming language |
+| Pandas | Data handling and preprocessing |
+| NumPy | Numerical operations |
+| Scikit-learn | Machine learning |
+| SHAP | Explainable AI |
+| Streamlit | Interactive web application |
+| Altair | Data visualisation |
+| Joblib | Model loading and storage |
+| PyArrow | Parquet dataset support |
 
-### 2. Clone Repository & Setup Virtual Environment
+---
+
+## Repository Structure
+
+```text
+SmartHealthTriage/
+│
+├── app/
+│   └── app.py
+│
+├── src/
+│   ├── __init__.py
+│   ├── inference.py
+│   ├── safety_layer.py
+│   └── explainability.py
+│
+├── models/
+│   ├── best_model.joblib
+│   ├── random_forest_model.joblib
+│   ├── label_encoder.joblib
+│   └── shap_test_patient.png
+│
+├── datasets/
+│   ├── symptom_features.txt
+│   ├── X_train.parquet
+│   ├── X_test.parquet
+│   ├── y_train.parquet
+│   └── y_test.parquet
+│
+├── notebooks/
+│   ├── 01_dataset_inspection.py
+│   ├── 02_data_preprocessing.py
+│   ├── 03_model_training.py
+│   ├── 04_test_shap.py
+│   └── 05_test_safety_layer.py
+│
+├── main.py
+├── requirements.txt
+├── README.md
+└── REPORT.md
+```
+
+---
+
+## Installation and Setup
+
+### 1. Clone the Repository
+
 ```bash
-# Navigate to the project root directory
+git clone https://github.com/niranjanhm21/SmartHealthTriage.git
 cd SmartHealthTriage
+```
 
-# Create a virtual environment (optional but recommended)
+### 2. Create a Virtual Environment (Optional)
+
+```bash
 python -m venv venv
+```
 
-# Activate the virtual environment
-# Windows (PowerShell):
+Activate it on Windows:
+
+```powershell
 .\venv\Scripts\Activate.ps1
-# Linux/macOS:
+```
+
+On Linux or macOS:
+
+```bash
 source venv/bin/activate
 ```
 
 ### 3. Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Launch the Web Application
+### 4. Run the Application
+
 ```bash
 streamlit run app/app.py
 ```
 
-Once initialized, open your browser and navigate to:
+Open the local application address shown in the terminal, normally:
+
 ```text
 http://localhost:8501
 ```
 
 ---
 
-## 📂 Repository Structure
+## Safety and Limitations
 
-```text
-SmartHealthTriage/
-├── app/
-│   └── app.py                     # Streamlit clinical dashboard UI
-├── src/
-│   ├── __init__.py                # Package initializer
-│   ├── inference.py               # Unified end-to-end inference pipeline
-│   ├── safety_layer.py            # Deterministic clinical safety rule engine
-│   └── explainability.py          # TreeSHAP feature attribution module
-├── models/
-│   ├── best_model.joblib          # Optimized multi-class classifier
-│   ├── random_forest_model.joblib # Random Forest ensemble for TreeSHAP
-│   ├── label_encoder.joblib       # Label encoder for 40 clinical disease classes
-│   └── shap_test_patient.png      # Baseline SHAP test visualization
-├── datasets/
-│   ├── symptom_features.txt       # Lexicon of 178 active binary symptom features
-│   ├── X_train.parquet            # Processed training features (80% split)
-│   ├── X_test.parquet             # Processed testing features (20% split)
-│   ├── y_train.parquet            # Encoded training labels
-│   └── y_test.parquet             # Encoded testing labels
-├── notebooks/
-│   ├── 01_dataset_inspection.py   # Dataset auditing, sparsity, and distribution analysis
-│   ├── 02_data_preprocessing.py   # Deduplication, class filtering (Top 40), and stratified split
-│   ├── 03_model_training.py       # Multi-model benchmark (LR vs. RF vs. GBM)
-│   ├── 04_test_shap.py            # SHAP explainability verification test
-│   └── 05_test_safety_layer.py    # Deterministic safety override unit test
-├── requirements.txt               # Locked project dependencies
-├── README.md                      # Project documentation and quick-start guide
-└── REPORT.md                      # Comprehensive academic MCA mini-project report
-```
+SmartHealth Triage uses predefined rules to identify selected emergency warning signs. A recognised warning sign can override the normal model-based urgency assessment.
+
+However, the safety layer has important limitations:
+
+- It only checks the warning signs implemented in its rules.
+- It cannot guarantee detection of every emergency.
+- Unrecognised or unsupported input may not be interpreted correctly.
+- The model is trained using artificially generated data.
+- Model scores are not medically calibrated probabilities.
+- SHAP explanations describe model behaviour, not medical correctness.
+- The system has not undergone clinical validation.
+
+The application is intended for academic demonstration and research into explainable symptom assessment.
+
+**Medical Disclaimer:** SmartHealth Triage does not provide confirmed diagnoses, prescribe medication, or replace a qualified healthcare professional. If you experience a possible medical emergency, seek immediate professional help through local emergency services. In India, call **112**.
 
 ---
 
-## 🧪 Experimental Verification Scripts
+## Future Enhancements
 
-To independently verify system components via command-line test harnesses:
-
-```bash
-# 1. Inspect dataset sparsity and column distributions
-python notebooks/01_dataset_inspection.py
-
-# 2. Re-run data cleaning and stratified splits
-python notebooks/02_data_preprocessing.py
-
-# 3. Verify TreeSHAP local attribution on sample patient vectors
-python notebooks/04_test_shap.py
-
-# 4. Verify deterministic clinical safety override rules
-python notebooks/05_test_safety_layer.py
-```
+- Adaptive follow-up questions based on reported symptoms.
+- Improved dataset quality and independent evaluation.
+- More comprehensive red-flag testing.
+- Evaluation of under-triage and over-triage.
+- Model calibration and uncertainty assessment.
+- Additional input features where suitable data is available.
+- Improved SHAP visualisations.
+- Cloud deployment for academic demonstration.
 
 ---
 
-## 🛡️ Clinical & Academic Disclaimer
+## Academic Purpose
 
-> **IMPORTANT NOTICE:**  
-> **SmartHealth Triage is an academic research prototype developed as an MCA mini-project.**  
-> It is designed exclusively for educational, technical demonstration, and decision-support research purposes. It does not provide medical diagnoses, clinical prognoses, or definitive treatment prescriptions. If you or someone you know is experiencing acute medical symptoms, crushing chest pain, severe breathlessness, or neurological impairment, **immediately call local emergency services (911) or proceed to the nearest emergency room.**
+This project was developed as an MCA Data Science academic project to explore the integration of:
+
+- Supervised machine learning.
+- Symptom-based condition prediction.
+- Rule-based safety mechanisms.
+- Explainable artificial intelligence.
+- Interactive application development.
+
+The project focuses on demonstrating the technical architecture and evaluation challenges of symptom-assessment systems, rather than claiming clinical effectiveness.
+
+---
+
+## Author
+
+**Niranjan H M**
+
+MCA Student | Data Science
+
+GitHub: [niranjanhm21](https://github.com/niranjanhm21)
