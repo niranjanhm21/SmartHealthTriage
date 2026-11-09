@@ -441,15 +441,18 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+
 # Prominent Academic Disclaimer Banner
 st.markdown("""
 <div class="disclaimer-banner">
     <div style="font-size: 1.4rem;">⚠️</div>
     <div>
-        <strong>Academic Research Prototype — Not a Definitive Clinical Diagnosis.</strong><br/>
-        This artificial intelligence decision-support tool is developed for clinical triage demonstration and research benchmarking. 
-        It does not substitute formal medical evaluation, diagnostic testing, or clinical judgment by a licensed medical practitioner. 
-        <strong>If experiencing acute life-threatening symptoms, call emergency services (911) immediately.</strong>
+        <strong>Academic Research Prototype — Not a Medical Diagnosis.</strong><br/>
+        This system is developed for educational demonstration and research.
+        It does not replace professional medical evaluation or clinical judgment.
+        Its predictions and urgency assessments have not been clinically validated.
+        <strong>If experiencing a possible medical emergency, call local
+        emergency services (112 in India) immediately.</strong>
     </div>
 </div>
 """, unsafe_allow_html=True)
