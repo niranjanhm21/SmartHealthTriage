@@ -9,11 +9,13 @@
 
 ## Executive Summary / Abstract
 
-Algorithmic Symptom Checkers (ASCs) and digital clinical decision-support tools are increasingly deployed to alleviate emergency department congestion and streamline patient routing. However, statistical machine learning models trained predominantly on disease prevalence suffer from a catastrophic vulnerability: **under-triage**. When life-threatening, acute conditions present with non-specific, overlapping symptoms (e.g., myocardial infarction presenting with vague gastrointestinal discomfort or mild breathlessness), purely probabilistic models often assign higher probability to common benign conditions, delaying critical emergency interventions.
+**SmartHealth Triage** is an academic project that explores explainable machine learning for symptom-based health issue prediction and urgency assessment. The system combines a machine learning classifier with a separate rule-based safety layer that checks for selected emergency red flags. It also uses SHAP-based explanations to show which symptom features contribute to model predictions.
 
-To address this life-critical challenge, this project presents **SmartHealth Triage**, a novel hybrid decision-support architecture that couples a high-accuracy multi-class ensemble classifier with an uncompromised **Deterministic Clinical Safety Layer** and real-time **TreeSHAP local feature attribution**. The system was trained on an augmented clinical dataset comprising 246,945 patient records across 178 standardized binary symptom features, strategically pruned to the top 40 clinical conditions. 
+The application accepts user-reported symptoms and displays up to three possible health conditions, an urgency category, relevant red-flag alerts, and an explanation of the model output. The safety layer can override the model's normal triage result when a configured emergency red flag is selected or detected.
 
-Empirical benchmarking across Logistic Regression, Histogram Gradient Boosting, and Random Forest demonstrated that **Random Forest** achieved superior operational balance, yielding **91.4% Top-1 accuracy**, **96.8% Top-3 differential diagnostic accuracy**, and an inference latency of **0.41 seconds** for real-time TreeSHAP computation. Under red-flag stress testing, the deterministic safety engine achieved a 100% override rate, instantly escalating acute presentations to Emergency priority regardless of the underlying statistical distribution. The system is deployed via an interactive, medical-informatics Streamlit dashboard providing immediate clinical risk stratification, transparent visual attributions, and actionable patient routing guidance.
+The project uses Python, Scikit-learn, Streamlit, and SHAP. Its purpose is to demonstrate how machine learning, explainability, and explicit safety rules can be combined in an educational symptom-assessment prototype.
+
+The system has important limitations. Its predictions and urgency categories have not been clinically validated, and its model confidence scores should not be interpreted as medically calibrated probabilities. The red-flag rules are limited to predefined conditions and do not guarantee that every emergency will be detected. The application is not a medical diagnostic tool and must not replace professional medical assessment.
 
 ---
 
