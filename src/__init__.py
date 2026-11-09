@@ -1,0 +1,3 @@
+"""
+SmartHealth Triage Core Package
+"""
